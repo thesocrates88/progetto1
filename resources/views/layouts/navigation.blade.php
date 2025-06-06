@@ -21,7 +21,7 @@
                         <a href="{{ route('cities') }}" class="text-gray-700 hover:text-blue-600">Città</a>
                         <a href="{{ route('visited-stations') }}" class="text-gray-700 hover:text-blue-600">Stazioni</a>
                         <a href="{{ route('cities') }}" class="text-gray-700 hover:text-blue-600">Convogli</a>
-                        <a href="{{ route('ticket.buy') }}" class="text-gray-700 hover:text-blue-600">Acquista biglietto</a>
+                        <a href="{{ route('ticket.buy') }}" class="text-gray-700 hover:text-blue-600">Acquista biglietti</a>
                         <a href="{{ route('ticket.index') }}" class="text-gray-700 hover:text-blue-600">I miei biglietti</a>
                     @endif
 
