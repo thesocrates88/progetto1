@@ -8,6 +8,7 @@
 /vendor
 .env
 .htaccess
+public/.htaccess
 .env.backup
 .env.production
 .phpactor.json
