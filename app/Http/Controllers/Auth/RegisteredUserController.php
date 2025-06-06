@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['in:customer,backoffice_amministrativo,backoffice_esercizio'],
+            'role' => ['in:customer,backoffice_amministrazione,backoffice_esercizio'],
         ]);
 
         $user = User::create([

@@ -15,7 +15,7 @@ class User extends Authenticatable
     //aggiungo costatni al model per usarle globalmente per i permessi
     public const ROLE_GUEST = 'guest';
     public const ROLE_CLIENTE = 'customer';
-    public const ROLE_BACKOFFICE_AMM = 'backoffice_amministrativo';
+    public const ROLE_BACKOFFICE_AMM = 'backoffice_amministrazione';
     public const ROLE_BACKOFFICE_ES = 'backoffice_esercizio';
 
     /**

@@ -23,7 +23,7 @@
                     <x-input-label for="role" :value="__('Ruolo')" />
                     <select id="role" name="role" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
                         <option value="customer" @selected(old('role') == 'customer')>Customer</option>
-                        <option value="backoffice_amministrazione" @selected(old('role') == 'backoffice_amministrativo')>Backoffice Amministrativo</option>
+                        <option value="backoffice_amministrazione" @selected(old('role') == 'backoffice_amministrazione')>Backoffice Amministrativo</option>
                         <option value="backoffice_esercizio" @selected(old('role') == 'backoffice_esercizio')>Backoffice Esercizio</option>
                     </select>
                     <x-input-error :messages="$errors->get('role')" class="mt-2" />
