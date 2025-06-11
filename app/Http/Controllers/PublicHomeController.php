@@ -14,6 +14,6 @@ class PublicHomeController extends Controller
                     ->orderBy('departure_time')
                     ->get();
 
-        return view('publichome', compact('trains'));
+        return view('PublicHome', compact('trains'));
     }
 }
