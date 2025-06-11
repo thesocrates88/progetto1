@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'paysteam' => [
+        'api_url' => env('PAYSTEAM_API_URL'),
+        'merchant_id' => env('PAYSTEAM_MERCHANT_ID'),
+        'api_key' => env('PAYSTEAM_API_KEY'),
+    ],
+
 ];

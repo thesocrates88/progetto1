@@ -25,6 +25,11 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// ROTTA PUBBLICA: PaySteam chiama questa dopo il pagamento
+Route::withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->post('/api/payment/callback', [\App\Http\Controllers\TicketController::class, 'paymentCallback'])
+    ->name('payment.callback');
+
 
 // ROTTE PER IL BACKOFFICE ESERCIZIO
 Route::middleware(['auth', 'backoffice_esercizio'])->group(function () {

@@ -1,5 +1,18 @@
 <x-app-layout>
     <div class="max-w-4xl mx-auto mt-12 px-4">
+
+        <!-- MESSAGGI DI ERRORE -->
+        @if ($errors->any())
+            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <strong class="block mb-2">Si sono verificati i seguenti errori:</strong>
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- FORM DI RICERCA -->
         <section class="bg-white shadow rounded-lg p-6 mb-8">
             <h2 class="text-2xl font-bold mb-4">Cerca treni disponibili</h2>

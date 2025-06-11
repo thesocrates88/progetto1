@@ -39,22 +39,6 @@
                 </div>
             </div>
 
-            <div class="mb-4">
-                <label for="card_number" class="block font-medium">Numero carta</label>
-                <input type="text" id="card_number" name="card_number" class="w-full border rounded px-3 py-2" required>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label for="expiry" class="block font-medium">Scadenza</label>
-                    <input type="text" id="expiry" name="expiry" class="w-full border rounded px-3 py-2" placeholder="MM/YY" required>
-                </div>
-                <div>
-                    <label for="cvv" class="block font-medium">CVV</label>
-                    <input type="text" id="cvv" name="cvv" class="w-full border rounded px-3 py-2" required>
-                </div>
-            </div>
-
             <x-primary-button class="w-full justify-center">
                 Conferma e Acquista
             </x-primary-button>

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Station, Train, SubTratta, Ticket};
+use App\Models\{Station, Train, SubTratta, Ticket, PendingPayment};
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 use App\Services\TicketPricingService;
+use Illuminate\Support\Facades\Log;
+
 
 class TicketController extends Controller
 {
@@ -138,6 +141,8 @@ class TicketController extends Controller
     /**
      * Salva i biglietti acquistati.
      */
+
+
     public function purchase(Request $request, Train $train)
     {
         $request->validate([
@@ -152,30 +157,174 @@ class TicketController extends Controller
         $from = $request->from_station_id;
         $to = $request->to_station_id;
         $user = $request->user();
+        $posti = $request->posti;
+
         $distance = abs(Station::find($to)->kilometer - Station::find($from)->kilometer);
         $cost = $distance;
-        $paymentToken = 'fake_' . uniqid();
+        $totalAmount = $cost * collect($posti)->flatten()->count();
 
-        foreach ($request->posti as $rollingStockId => $postiCarrozza) {
-            foreach ($postiCarrozza as $numeroPosto) {
-                Ticket::create([
-                    'user_id' => $user->id,
-                    'train_id' => $train->id,
-                    'departure_station_id' => $from,
-                    'arrival_station_id' => $to,
-                    'departure_time' => $train->departure_time,
-                    'arrival_time' => $train->arrival_time,
-                    'costo' => $cost,
-                    'rolling_stock_id' => $rollingStockId,
-                    'numero_posto' => $numeroPosto,
-                    'payed_at' => now(),
-                    'payment_token' => $paymentToken,
-                ]);
-            }
+        $transactionId = uniqid('tx_');
+
+        // Salvataggio dati temporanei in sessione - deprecato perchè uso il modello PendingPayment
+        session()->put("payment_pending.$transactionId", [
+            'train_id' => $train->id,
+            'user_id' => $user->id,
+            'from' => $from,
+            'to' => $to,
+            'posti' => $posti,
+            'cost' => $cost,
+            'name' => $request->name,
+            'surname' => $request->surname,
+        ]);
+
+        //scrivi in db il pending payment prima della chiamata
+        $pending = PendingPayment::create([
+            'transaction_id' => $transactionId,
+            'user_id' => $user->id,
+            'train_id' => $train->id,
+            'from_station_id' => $from,
+            'to_station_id' => $to,
+            'posti' => $posti,
+            'cost' => $cost,
+            'name' => $request->name,
+            'surname' => $request->surname,
+        ]);
+
+        Log::info('PendingPayment salvato', ['id' => $pending->id]);
+
+        // Configurazione PaySteam
+        $merchantId = config('services.paysteam.merchant_id');
+        $apiUrl = config('services.paysteam.api_url');
+        $apiKey = config('services.paysteam.api_key');
+
+        if (! $merchantId || ! $apiUrl || ! $apiKey) {
+            abort(500, 'Configurazione PaySteam mancante.');
         }
 
-        return redirect()->route('ticket.index')->with('success', 'Acquisto completato. I biglietti sono stati emessi.');
+        // Logging iniziale
+        \Log::info('Invio richiesta a PaySteam', [
+            'apiUrl' => $apiUrl,
+            'merchant_id' => $merchantId,
+            'id_transazione' => $transactionId,
+            'importo' => $totalAmount,
+            'callback_url' => route('payment.callback'),
+        ]);
+
+        // Richiesta a PaySteam
+        $response = Http::withHeaders([
+                'X-API-KEY' => $apiKey,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])
+            ->post($apiUrl, [
+                'merchant_id' => $merchantId,
+                'id_transazione' => $transactionId,
+                'descrizione' => "Biglietti treno #{$train->id} da " .Station::find($from)?->name . " a " . Station::find($to)?->name,
+                'importo' => $totalAmount,
+                'url_callback' => route('payment.callback'),
+                'url_in' => route('ticket.index'),
+            ]);
+
+        if ($response->successful() && isset($response->json()['redirect_url'])) {
+            \Log::info('Redirect PaySteam ricevuto', [
+                'redirect_url' => $response->json()['redirect_url']
+            ]);
+
+            return view('tickets.redirecting-to-paysteam', [
+                'redirectUrl' => $response->json()['redirect_url'],
+            ]);
+        }
+
+        \Log::error('Errore comunicazione con PaySteam', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
+        return back()->withErrors(['error' => 'Errore nella comunicazione con PaySteam.']);
     }
+
+
+
+public function paymentCallback(Request $request)
+{
+    // Log iniziale della richiesta raw
+    Log::info('RICHIESTA CALLBACK ARRIVATA', ['raw' => $request->getContent()]);
+
+    // Decodifica il payload JSON
+    $request->merge(json_decode($request->getContent(), true));
+
+    // Log dei dati ricevuti dopo il merge
+    Log::info('MERGE OK', ['merged' => $request->all()]);
+
+    // Validazione dei dati
+    $request->validate([
+        'id_transazione' => 'required|string',
+        'esito' => 'required|in:OK,KO',
+    ]);
+
+    $tx = $request->id_transazione;
+    $esito = $request->esito;
+
+    // Recupera il pending payment dal database
+    $pending = PendingPayment::where('transaction_id', $tx)->first();
+
+    Log::info('Verifica pending payment', [
+        'tx' => $tx,
+        'found' => (bool) $pending,
+        'esito' => $esito
+    ]);
+
+    if (! $pending || $esito !== 'OK') {
+        Log::warning('Pagamento fallito o dati non trovati', [
+            'tx' => $tx,
+            'esito' => $esito
+        ]);
+
+        return response()->json([
+            'message' => 'Pagamento fallito o dati non trovati',
+            'redirect' => route('ticket.index'),
+        ], 400);
+    }
+
+    $train = Train::find($pending->train_id);
+    $createdTickets = [];
+
+    foreach ($pending->posti as $rollingStockId => $postiCarrozza) {
+        foreach ($postiCarrozza as $numeroPosto) {
+            $ticket = Ticket::create([
+                'user_id' => $pending->user_id,
+                'train_id' => $train->id,
+                'departure_station_id' => $pending->from_station_id,
+                'arrival_station_id' => $pending->to_station_id,
+                'departure_time' => $train->departure_time,
+                'arrival_time' => $train->arrival_time,
+                'costo' => $pending->cost,
+                'rolling_stock_id' => $rollingStockId,
+                'numero_posto' => $numeroPosto,
+                'payed_at' => now(),
+                'payment_token' => $tx,
+            ]);
+            $createdTickets[] = $ticket;
+        }
+    }
+
+    // Elimina la pending payment dopo aver creato i biglietti
+    $pending->delete();
+
+    Log::info('Biglietti creati con successo', [
+        'count' => count($createdTickets),
+        'user_id' => $pending->user_id
+    ]);
+
+    return response()->json([
+        'message' => 'Pagamento riuscito, biglietti creati',
+        'redirect' => route('ticket.index'),
+    ]);
+}
+
+
+
+
 
     /**
      * Mostra i biglietti dell'utente loggato.
