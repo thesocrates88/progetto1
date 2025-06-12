@@ -57,9 +57,9 @@ Route::middleware(['auth', 'backoffice'])->group(function () {
     Route::resource('requested-trains', RequestedTrainController::class);
 });
 
-//ROTTE PER BACKOFFICE AMMINISTRAZIONE - per modifiche evolutive, non ci sono azioni esclusive per ora
+//ROTTE PER BACKOFFICE AMMINISTRAZIONE
 Route::middleware(['auth', 'backoffice_amministrazione'])->group(function () {
-
+    Route::get('/revenue', [\App\Http\Controllers\RevenueController::class, 'index'])->name('admin.trains.revenue');
 });
 
 //rotte per utenti loggati ma non basate su ruolo

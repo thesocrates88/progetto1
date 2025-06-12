@@ -33,6 +33,8 @@
                         <a href="{{ route('convoys.index') }}" class="text-gray-700 hover:text-blue-600">Convogli</a>
                         <a href="{{ route('trains.index') }}" class="text-gray-700 hover:text-blue-600">Treni</a>
                         <a href="{{ route('requested-trains.index') }}" class="text-gray-700 hover:text-blue-600">Richieste Treni</a>
+                        <a href="{{ route('admin.trains.revenue') }}" class="text-gray-700 hover:text-blue-600">Rendiconto Treni</a>
+
                     @endif
                 <!-- elementi nav backoffice esercizio -->
 
