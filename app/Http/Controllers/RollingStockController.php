@@ -23,7 +23,7 @@ class RollingStockController extends Controller
 
         RollingStock::create($validated);
 
-        return redirect()->route('rollingstocks.create')->with('success', 'Materiale rotabile inserito!');
+        return redirect()->route('rolling-stock.create')->with('success', 'Materiale rotabile inserito!');
     }
 
     public function index()
