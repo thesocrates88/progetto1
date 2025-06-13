@@ -54,12 +54,23 @@ class TrainPlannerService
     public function hasConflicts(array $subtratte, ?int $excludeTrainId = null): ?array
     {
         foreach ($subtratte as $sub) {
-            $query = SubTratta::where('from_station_id', $sub['from_station_id'])
-                ->where('to_station_id', $sub['to_station_id'])
-                ->where('direction', $sub['direction'])
-                ->where(function ($query) use ($sub) {
-                    $query->where('departure_time', '<', $sub['arrival_time'])
-                          ->where('arrival_time', '>', $sub['departure_time']);
+            $from = $sub['from_station_id'];
+            $to = $sub['to_station_id'];
+            $start = $sub['departure_time'];
+            $end = $sub['arrival_time'];
+
+            $query = SubTratta::where(function ($q) use ($from, $to) {
+                    $q->where(function ($q2) use ($from, $to) {
+                        $q2->where('from_station_id', $from)
+                        ->where('to_station_id', $to);
+                    })->orWhere(function ($q2) use ($from, $to) {
+                        $q2->where('from_station_id', $to)
+                        ->where('to_station_id', $from);
+                    });
+                })
+                ->where(function ($q) use ($start, $end) {
+                    $q->where('departure_time', '<', $end)
+                    ->where('arrival_time', '>', $start);
                 });
 
             if ($excludeTrainId) {
@@ -67,12 +78,13 @@ class TrainPlannerService
             }
 
             if ($query->exists()) {
-                return $sub;
+                return $sub; // Ritorna la prima sub-tratta in conflitto
             }
         }
 
         return null;
     }
+
     
     public function convoyHasConflict(int $convoyId, string $date, string $departureTime, string $arrivalTime, ?int $excludeTrainId = null): bool
     {
