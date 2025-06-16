@@ -30,6 +30,7 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-4 py-2">ID</th>
+                                <th class="px-4 py-2">Codice Treno</th>
                                 <th class="px-4 py-2">Convoglio</th>
                                 <th class="px-4 py-2">Partenza</th>
                                 <th class="px-4 py-2">Arrivo</th>
@@ -41,6 +42,7 @@
                             @foreach ($trains as $train)
                                 <tr>
                                     <td class="px-4 py-2">{{ $train->id }}</td>
+                                    <td class="px-4 py-2">{{ $train->name }}</td>
                                     <td class="px-4 py-2">{{ $train->convoy->name ?? 'N/D' }}</td>
                                     <td class="px-4 py-2">
                                         {{ $train->departureStation->name ?? 'N/D' }}<br>
@@ -76,6 +78,7 @@
                         <thead class="bg-gray-100">
                             <tr>
                                 <th class="border px-4 py-2 text-left">ID Treno</th>
+                                <th class="border px-4 py-2 text-left">Codice Treno</th>
                                 <th class="border px-4 py-2 text-left">Stazione Partenza</th>
                                 <th class="border px-4 py-2 text-left">Stazione Arrivo</th>
                                 <th class="border px-4 py-2 text-left">Data</th>
@@ -94,6 +97,7 @@
                                 @endphp
                                 <tr>
                                     <td class="border px-4 py-2">{{ $train->id }}</td>
+                                    <td class="border px-4 py-2">{{ $train->name }}</td>
                                     <td class="border px-4 py-2">{{ $train->departureStation->name }}</td>
                                     <td class="border px-4 py-2">{{ $train->arrivalStation->name }}</td>
                                     <td class="border px-4 py-2">{{ \Carbon\Carbon::parse($train->date)->format('d/m/Y') }}</td>

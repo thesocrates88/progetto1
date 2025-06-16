@@ -8,6 +8,7 @@ class Train extends Model
 {
     protected $fillable = [
         'convoy_id',
+        'name',
         'departure_station_id',
         'arrival_station_id',
         'date',

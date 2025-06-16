@@ -9,6 +9,7 @@ use App\Http\Controllers\TrainController;
 use App\Http\Controllers\PublicHomeController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RequestedTrainController;
+use App\Http\Controllers\TimetableController;
 
 //Route::get('/', function () {
 //    return view('PublicHome');
@@ -21,6 +22,8 @@ Route::view('/visited-stations', 'visited-stations')->name('visited-stations');
 Route::get('/public-trains/{train}', [TrainController::class, 'show'])->name('trains.public.show');
 Route::get('/public-convoys/{convoy}', [ConvoyController::class, 'show'])->name('convoys.public.show');
 Route::get('/public-convoys', [ConvoyController::class, 'publicIndex'])->name('convoys.public.index');
+Route::get('/timetable', [TimetableController::class, 'index'])->name('timetable.index');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

@@ -21,7 +21,14 @@
             <form method="POST" action="{{ route('trains.update', $train->id) }}">
                 @csrf
                 @method('PUT')
-
+                
+                <!-- Nome del treno -->
+                <div class="mb-4">
+                    <label for="name" class="block font-medium text-sm text-gray-700">Nome del treno</label>
+                    <input type="text" name="name" id="name"
+                        value="{{ old('name') }}"
+                        class="mt-1 block w-full rounded border-gray-300 shadow-sm" required>
+                </div>
                 <!-- Convoglio -->
                 <div class="mb-4">
                     <label for="convoy_id" class="block font-medium text-sm text-gray-700">Convoglio</label>

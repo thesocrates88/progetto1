@@ -12,6 +12,8 @@
                     <a href="{{ route('cities') }}" class="text-gray-700 hover:text-blue-600">Città</a>
                     <a href="{{ route('visited-stations') }}" class="text-gray-700 hover:text-blue-600">Stazioni</a>
                     <a href="{{ route('cities') }}" class="text-gray-700 hover:text-blue-600">Convogli</a>
+                    <a href="{{ route('timetable.index') }}" class="text-gray-700 hover:text-blue-600">Orario Treni</a>
+
                 @endguest
 
                 @auth
@@ -20,9 +22,11 @@
                     @if (Auth::user()->role === 'customer')                    
                         <a href="{{ route('cities') }}" class="text-gray-700 hover:text-blue-600">Città</a>
                         <a href="{{ route('visited-stations') }}" class="text-gray-700 hover:text-blue-600">Stazioni</a>
+                        <a href="{{ route('timetable.index') }}" class="text-gray-700 hover:text-blue-600">Orario Treni</a>
                         <a href="{{ route('cities') }}" class="text-gray-700 hover:text-blue-600">Convogli</a>
                         <a href="{{ route('ticket.buy') }}" class="text-gray-700 hover:text-blue-600">Acquista biglietti</a>
                         <a href="{{ route('ticket.index') }}" class="text-gray-700 hover:text-blue-600">I miei biglietti</a>
+                        
                     @endif
 
                 <!-- elementi nav backoffice amministrativo -->
@@ -31,6 +35,7 @@
                         <a href="{{ route('stations.index') }}" class="text-gray-700 hover:text-blue-600">Stazioni</a>
                         <a href="{{ route('rolling-stock.index') }}" class="text-gray-700 hover:text-blue-600">Materiale Rotabile</a>
                         <a href="{{ route('convoys.index') }}" class="text-gray-700 hover:text-blue-600">Convogli</a>
+                        <a href="{{ route('timetable.index') }}" class="text-gray-700 hover:text-blue-600">Orario Treni</a>
                         <a href="{{ route('trains.index') }}" class="text-gray-700 hover:text-blue-600">Treni</a>
                         <a href="{{ route('requested-trains.index') }}" class="text-gray-700 hover:text-blue-600">Richieste Treni</a>
                         <a href="{{ route('admin.trains.revenue') }}" class="text-gray-700 hover:text-blue-600">Rendiconto Treni</a>
@@ -43,6 +48,7 @@
                         <a href="{{ route('rolling-stock.index') }}" class="text-gray-700 hover:text-blue-600">Materiale Rotabile</a>
                         <a href="{{ route('convoys.index') }}" class="text-gray-700 hover:text-blue-600">Convogli</a>
                         <a href="{{ route('trains.index') }}" class="text-gray-700 hover:text-blue-600">Treni</a>
+                        <a href="{{ route('timetable.index') }}" class="text-gray-700 hover:text-blue-600">Orario Treni</a>
                         <a href="{{ route('requested-trains.index') }}" class="text-gray-700 hover:text-blue-600">Richieste Treni</a>
                     @endif
                 @endauth

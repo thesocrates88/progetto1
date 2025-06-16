@@ -31,6 +31,7 @@ class TrainController extends Controller
     {
         $validated = $request->validate([
             'convoy_id' => 'required|exists:convoys,id',
+            'name' => 'required|string|max:255',
             'departure_station_id' => 'required|exists:stations,id|different:arrival_station_id',
             'arrival_station_id' => 'required|exists:stations,id',
             'date' => 'required|date',
@@ -77,6 +78,7 @@ class TrainController extends Controller
 
         $train = Train::create([
             'convoy_id' => $validated['convoy_id'],
+            'name' => $validated['name'], 
             'departure_station_id' => $validated['departure_station_id'],
             'arrival_station_id' => $validated['arrival_station_id'],
             'date' => $validated['date'],
@@ -96,6 +98,7 @@ class TrainController extends Controller
     {
         $validated = $request->validate([
             'convoy_id' => 'required|exists:convoys,id',
+            'name' => 'required|string|max:255',
             'departure_station_id' => 'required|exists:stations,id|different:arrival_station_id',
             'arrival_station_id' => 'required|exists:stations,id',
             'date' => 'required|date',
@@ -143,6 +146,7 @@ class TrainController extends Controller
 
         $train->update([
             'convoy_id' => $validated['convoy_id'],
+            'name' => $validated['name'], 
             'departure_station_id' => $validated['departure_station_id'],
             'arrival_station_id' => $validated['arrival_station_id'],
             'date' => $validated['date'],
