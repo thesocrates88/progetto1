@@ -46,7 +46,7 @@
                     </x-primary-button>
                 </div>
                 <div>Credenziali backoffice esercizio</div>
-                <div>Usr: luca@luca.it</div>
+                <div>Usr: esercizio@sft.it</div>
                 <div>Psw: 123qweasd</div>
                 <div>Credenziali backoffice amministrativo</div>
                 <div>Usr: amministrativo@treni.it</div>
